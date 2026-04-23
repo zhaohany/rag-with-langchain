@@ -205,3 +205,17 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Frontend
+node_modules/
+frontend/node_modules/
+
+# Local data artifacts (keep folder structure only)
+data/index/*
+!data/index/.gitkeep
+data/meta/*
+!data/meta/.gitkeep
+!data/meta/metadata.json
+data/system/*
+!data/system/.gitkeep
+!data/system/system_meta.json
