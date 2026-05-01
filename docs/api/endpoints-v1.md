@@ -27,6 +27,20 @@ Response example:
 
 Request body: optional (V1 可以为空)
 
+Behavior:
+
+- Reads `*.md` files from `data/raw_docs/`
+- Splits content into overlapping chunks
+- Embeds chunks with local HuggingFace model
+- Writes FAISS index to `data/index/faiss.index`
+- Writes chunk metadata to `data/meta/metadata.json`
+- Updates ingest status in `data/system/system_meta.json`
+
+Failure:
+
+- Returns `HTTP 500` with `detail` if ingest fails
+- Sets `ingestion_status` to `failed` in system metadata
+
 Response example:
 
 ```json

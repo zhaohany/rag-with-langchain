@@ -1,19 +1,20 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, HTTPException
 
-from app.models.schemas import IngestRequest, NotImplementedResponse
+from app.models.schemas import IngestResponse
+from app.services.ingest_service import ingest_service
 
 router = APIRouter(tags=["ingest"])
 
 
 @router.post(
     "/ingest",
-    response_model=NotImplementedResponse,
-    status_code=status.HTTP_501_NOT_IMPLEMENTED,
+    response_model=IngestResponse,
 )
-def ingest(_payload: IngestRequest) -> NotImplementedResponse:
-    return NotImplementedResponse(
-        status="not_implemented",
-        message="Ingest API schema is ready. Implementation will be done in class.",
-    )
+def ingest() -> IngestResponse:
+    try:
+        payload = ingest_service.run_sync_ingest()
+    except RuntimeError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    return IngestResponse.model_validate(payload)
