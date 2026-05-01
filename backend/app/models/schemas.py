@@ -16,6 +16,13 @@ class IngestRequest(BaseModel):
     pass
 
 
+class IngestResponse(BaseModel):
+    status: str
+    total_docs: int
+    total_chunks: int
+    message: str
+
+
 class QueryRequest(BaseModel):
     question: str
     session_id: str | None = None

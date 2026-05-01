@@ -1,1 +1,114 @@
-[]
+[
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_1",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 1,
+    "chunk_text": "# Company IT Support Playbook\n\nThis playbook is used by internal IT support teams to triage, troubleshoot, and escalate issues.\nIt is intentionally detailed so we can use one real-looking document for ingest and chunking tests.\n\n## Access and Identity Support\n\nIdentity incidents are high-impact because they block core work. Always verify user identity before\nchanging credentials, MFA devices, or permissions. For every request, record request channel,\nemployee ID, manager confirmation (if required), and exact action taken.\n\n### Password Reset\n\nIf a user cannot sign in, start with self-service reset and confirm they are using the corporate\nidentity domain. If reset email is delayed, verify mailbox health, spam filtering, and mail routing\nbefore manually resetting from admin console. For manu"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_2",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 2,
+    "chunk_text": "delayed, verify mailbox health, spam filtering, and mail routing\nbefore manually resetting from admin console. For manual reset, enforce temporary password policy,\nforce password change at next login, and confirm account is not simultaneously locked by conditional\naccess policy.\n\n### MFA and Authenticator Issues\n\nFor MFA failures, identify whether the problem is push notification delay, device clock drift,\nauthenticator app corruption, or SIM / number migration. If using TOTP, require user to sync device\ntime and re-scan seed where policy allows. If using push-based approval, check notification settings,\nbattery optimization, background app restrictions, and corporate MDM profile state.\n\n### Account Lockout\n\nWhen account lockout repeats, collect lockout event timeline and source IP/device"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_3",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 3,
+    "chunk_text": "M profile state.\n\n### Account Lockout\n\nWhen account lockout repeats, collect lockout event timeline and source IP/device names. Most repeated\nlockouts come from stale credentials in mobile mail clients, mapped network drives, legacy scripts,\nor old VPN profiles. Clear cached credentials in keychain/credential manager and rotate service\naccount secrets if automation is involved.\n\n## VPN and Remote Access\n\nRemote access incidents are common during travel and policy updates. Confirm user location,\nnetwork type (home/cellular/hotel), VPN client version, and recent OS updates before deep diagnosis.\n\n### VPN Cannot Connect\n\nCheck whether failure occurs at DNS resolution, TCP handshake, authentication, or tunnel negotiation.\nValidate endpoint URL, certificate trust chain, and system clock. If TLS"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_4",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 4,
+    "chunk_text": "ndshake, authentication, or tunnel negotiation.\nValidate endpoint URL, certificate trust chain, and system clock. If TLS handshake fails, compare\ndevice root certificates against baseline image. If auth succeeds but tunnel fails, inspect split\ntunnel policy, MTU mismatch, and endpoint security posture checks.\n\n### VPN Connected but Internal Tools Unreachable\n\nIf VPN shows connected status but internal apps fail, test reachability in layers: internal DNS,\ngateway ping, private HTTP endpoint, and target service health. Confirm split-tunnel routes include\nrequired subnets and that local firewall does not block assigned virtual interface. Verify no conflict\nwith overlapping home LAN CIDR ranges.\n\n### VPN Client or Certificate Drift\n\nAfter certificate renewal windows, users may hold expired cli"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_5",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 5,
+    "chunk_text": "ome LAN CIDR ranges.\n\n### VPN Client or Certificate Drift\n\nAfter certificate renewal windows, users may hold expired client certificates in system keychain.\nRemove stale certs, reinstall managed profile, and restart network stack. If client version is behind\nminimum supported build, upgrade first before escalation.\n\n## Network and Internet Issues\n\nNetwork reports should capture time, location, affected services, and whether issue reproduces on\nmultiple devices. Distinguish local device faults from office-wide incidents.\n\n### No Internet in Office\n\nVerify link lights on access switch, DHCP lease assignment, gateway reachability, and DNS response.\nIf only one VLAN is affected, inspect recent ACL or segmentation policy changes. For widespread outage,\ntrigger network incident bridge and publis"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_6",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 6,
+    "chunk_text": "ed, inspect recent ACL or segmentation policy changes. For widespread outage,\ntrigger network incident bridge and publish status page update.\n\n### Slow Internet and Packet Loss\n\nMeasure baseline latency and jitter to approved internal and external targets. Compare wired vs Wi-Fi,\n2.4 GHz vs 5 GHz, and peak-hour congestion patterns. Validate AP channel overlap, rogue AP presence,\nand QoS policy drift. Collect traceroute and packet capture when loss is intermittent.\n\n### DNS and Proxy Misconfiguration\n\nIf users can access by IP but not hostname, test resolver chain and search domains. For proxy issues,\nverify PAC file delivery, proxy auth token validity, and bypass rules for internal domains.\n\n## Endpoint Device Support\n\nDevice support should balance speed and data safety. Before invasive fi"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_7",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 7,
+    "chunk_text": "r internal domains.\n\n## Endpoint Device Support\n\nDevice support should balance speed and data safety. Before invasive fixes, confirm backup status and\nbusiness criticality of local files.\n\n### Performance Degradation\n\nCollect CPU, memory, disk IO, and thermal metrics. Check startup items, background sync tools,\nbrowser extensions, endpoint security scans, and pending OS patches. If disk free space is under\nthreshold, run cleanup workflow and move large archives to approved storage.\n\n### Startup Failures and OS Crashes\n\nFor repeated crashes, collect crash logs and recent driver or kernel updates. Boot in safe mode,\nisolate third-party kernel extensions, and test with clean user profile. If hardware diagnostics show\nmemory or disk errors, replace components based on warranty matrix.\n\n### Sto"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_8",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 8,
+    "chunk_text": "user profile. If hardware diagnostics show\nmemory or disk errors, replace components based on warranty matrix.\n\n### Storage and File System Errors\n\nIf users report missing files or corruption, stop write-heavy operations immediately. Validate disk\nSMART status, run file system checks, and restore from snapshots where available. Escalate to security\nif ransomware indicators appear.\n\n## Email and Collaboration Tools\n\nCommunication outages impact many teams quickly. Prioritize broad incidents and publish temporary\nworkarounds while root cause analysis continues.\n\n### Email Send and Receive Failures\n\nConfirm whether issue is sender-specific, domain-specific, or global. Inspect outbound queue,\nmail relay health, spam quarantine, and connector certificates. For delayed delivery, correlate\nwith"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_9",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 9,
+    "chunk_text": "ct outbound queue,\nmail relay health, spam quarantine, and connector certificates. For delayed delivery, correlate\nwith upstream provider incidents and retry policy behavior.\n\n### Calendar Sync and Meeting Issues\n\nIf calendar updates are delayed, check client cache state, mobile sync policy, and API throttling.\nFor recurring meetings with wrong timezone, validate organizer timezone settings and daylight-saving\npolicy updates.\n\n### Chat Platform Connectivity\n\nWhen chat tools are unreachable, validate websocket connectivity, proxy compatibility, and firewall\nrules for required domains and ports. For voice/video degradation, capture MOS metrics and packet loss.\n\n## Business Application Access\n\nApplication access issues usually involve IAM groups, environment mismatch, or stale role claims.\n\n#"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_10",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 10,
+    "chunk_text": "Application Access\n\nApplication access issues usually involve IAM groups, environment mismatch, or stale role claims.\n\n### ERP and CRM Permission Denied\n\nVerify user role mapping from HR source of truth through IAM sync to application ACLs. Confirm user is\nin correct cost center and department attributes are current. If role propagation is delayed, trigger\nmanual sync and re-authenticate.\n\n### SSO Redirect Loop\n\nSSO loops often come from cookie domain mismatch, clock skew, or conflicting browser profiles.\nClear session cookies for target domains, verify IdP app config, and test with fresh browser profile.\n\n### Environment-Specific Access Problems\n\nCheck whether user is routed to production, staging, or sandbox by URL and role policy. Ensure intended\nenvironment is included in authorization"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_11",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 11,
+    "chunk_text": "uted to production, staging, or sandbox by URL and role policy. Ensure intended\nenvironment is included in authorization claim and that VPN route allows target environment subnet.\n\n## Security Incident Triage\n\nSecurity-related tickets require strict chain of custody and timeline logging.\n\n### Phishing Report\n\nCollect original message headers, sender envelope, link targets, and attachment hashes. Quarantine\nsimilar messages tenant-wide where tooling supports bulk action. Notify security operations with IOC\nbundle and affected user list.\n\n### Suspicious Login Alert\n\nValidate impossible travel patterns, unusual device fingerprints, and abnormal session duration.\nIf compromise is likely, force sign-out, rotate credentials, revoke refresh tokens, and review\nprivileged actions during suspect win"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_12",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 12,
+    "chunk_text": "e is likely, force sign-out, rotate credentials, revoke refresh tokens, and review\nprivileged actions during suspect window.\n\n### Malware Containment\n\nIsolate host from network, preserve forensic artifacts, and avoid reboot unless directed by incident\nresponse lead. Coordinate with endpoint security tooling for scan, quarantine, and reimage decision.\n\n## Escalation and Handoff\n\nEscalate with complete context to reduce ping-pong between teams.\n\n### Severity Matrix\n\nUse standardized severity levels:\n- Sev 1: company-wide outage or critical security event\n- Sev 2: multi-team impact with major workflow blocked\n- Sev 3: single-team issue with workaround available\n- Sev 4: individual issue, low urgency\n\n### Required Escalation Package\n\nEvery escalation should include:\n- business impact summary\n-"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_13",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 13,
+    "chunk_text": "vidual issue, low urgency\n\n### Required Escalation Package\n\nEvery escalation should include:\n- business impact summary\n- reproduction steps\n- timestamps with timezone\n- affected users and geographies\n- logs, screenshots, and command outputs already collected\n- mitigation attempted and result\n\n### Post-Incident Review\n\nFor Sev 1 and Sev 2 incidents, run post-incident review within five business days. Document timeline,\nroot cause, contributing factors, corrective actions, owners, and due dates. Feed recurring failure\npatterns back into this playbook.\n\n## Long Structured Section for Chunking Stress Test\n\nThis section is intentionally long to test recursive chunking behavior with H2 and H3 boundaries.\nIt includes multiple dense paragraphs so students can verify: H2 split first, then H3 split,"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_14",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 14,
+    "chunk_text": "with H2 and H3 boundaries.\nIt includes multiple dense paragraphs so students can verify: H2 split first, then H3 split,\nthen fallback to naive chunking when any H3 block remains oversized.\n\n### Large Procedure Block A\n\nStep 1: Gather user report details with exact timestamps, local timezone, network context, and device\nidentifiers. Step 2: Verify identity and authorization for support actions. Step 3: Reproduce issue\nin a controlled environment where possible. Step 4: Check service dashboards for correlated alerts.\nStep 5: Compare user environment baseline against golden configuration. Step 6: Test smallest-risk\nmitigation first. Step 7: Document outcomes in ticket before moving to next action. Step 8: If issue\npersists, gather logs and metrics with retention-safe process. Step 9: Evaluat"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_15",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 15,
+    "chunk_text": "e moving to next action. Step 8: If issue\npersists, gather logs and metrics with retention-safe process. Step 9: Evaluate incident scope and\npotential blast radius. Step 10: Escalate with complete package when threshold is met.\n\n### Large Procedure Block B\n\nWhen root cause is uncertain, use hypothesis-driven triage. Build three likely hypotheses and define\nwhat evidence confirms or disproves each one. Run low-risk tests in sequence, capture command output,\nand avoid changing multiple variables at once. If a workaround restores service, mark state as\nmitigated and continue root cause analysis until permanent fix is defined. Track rollback plan for\nevery change, including owner and verification criteria. Close incident only after user validation,\nmonitoring stabilization, and knowledge base"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_16",
+    "source": "company_it_support_playbook.md",
+    "chunk_index": 16,
+    "chunk_text": "wner and verification criteria. Close incident only after user validation,\nmonitoring stabilization, and knowledge base updates.\n\n### Large Procedure Block C\n\nFor recurring incidents, correlate by team, region, application, and time window. Identify whether\nfailure pattern aligns with deployments, certificate rotation windows, identity policy updates,\nendpoint agent upgrades, or network maintenance. Convert repeated manual actions into runbooks and\nautomation where safe. Ensure support handoff notes include pending risks and next checkpoints."
+  }
+]
