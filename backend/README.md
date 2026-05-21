@@ -1,10 +1,10 @@
 # Backend Skeleton
 
-当前已包含可运行的 FastAPI skeleton：
+当前已包含可运行的 FastAPI backend：
 
 - `GET /api/v1/health` 可用
-- `POST /api/v1/ingest` 预留（not implemented）
-- `POST /api/v1/query` 预留（not implemented）
+- `POST /api/v1/ingest` 已实现（LangChain splitter + local HuggingFace embeddings + FAISS）
+- `POST /api/v1/query` 预留（not implemented, returns 501）
 
 ## Run
 
