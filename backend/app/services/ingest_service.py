@@ -117,7 +117,26 @@ class IngestService:
           1) In `run_sync_ingest`, append `RunnableLambda(self._step_finalize)` to the chain.
           2) Then return `result["response"]` from chain output instead of building response outside chain.
         """
-        raise NotImplementedError("Homework: implement finalize chain step")
+        total_docs = len(payload["docs"])
+        total_chunks = len(payload["records"])
+        time = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+        self._write_system_meta(
+            {
+                "ingestion_status": "idle",
+                "last_success_ingestion_time": time,
+                "total_docs": total_docs,
+            }
+        )
+
+        payload["response"] = {
+                "status": "success",
+                "total_docs": total_docs,
+                "total_chunks": total_chunks,
+                "message": "Ingestion completed"
+                }
+
+        return payload
 
     def run_sync_ingest(self) -> dict[str, Any]:
         previous_meta = self._read_system_meta()
