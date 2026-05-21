@@ -4,7 +4,14 @@
 
 - `GET /api/v1/health` 可用
 - `POST /api/v1/ingest` 已实现（LangChain splitter + local HuggingFace embeddings + FAISS）
-- `POST /api/v1/query` 预留（not implemented, returns 501）
+- `POST /api/v1/query` 已实现 retrieval skeleton（返回检索文档，不生成答案）
+
+Query 课堂作业核心函数：
+
+- `app/services/query_service.py::_build_retrieved_chunk`
+  - 输入：`text`, `metadata`, `raw_score`
+  - 输出：`chunk_id/doc_id/score/text/source`
+  - 要求：类型安全、缺失字段兜底、输出稳定可序列化
 
 ## Run
 

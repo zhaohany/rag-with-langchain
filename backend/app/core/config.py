@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     embedding_batch_size: int = 32
     chunk_size: int = 800
     chunk_overlap: int = 120
+    query_top_k: int = 1
 
 
 settings = Settings()

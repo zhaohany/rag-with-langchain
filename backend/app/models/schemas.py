@@ -28,6 +28,19 @@ class QueryRequest(BaseModel):
     session_id: str | None = None
 
 
+class RetrievedChunk(BaseModel):
+    chunk_id: str
+    doc_id: str
+    score: float
+    text: str
+    source: str
+
+
+class QueryResponse(BaseModel):
+    used_top_k: int
+    retrieved_chunks: list[RetrievedChunk]
+
+
 class NotImplementedResponse(BaseModel):
     status: str
     message: str

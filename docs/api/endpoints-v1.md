@@ -54,7 +54,7 @@ Response example:
 
 ## POST /api/v1/query
 
-用途：执行检索增强问答。
+用途：执行检索并返回相关文档片段（V1 skeleton 不生成答案）。
 
 Request example:
 
@@ -65,19 +65,25 @@ Request example:
 }
 ```
 
+Behavior (current skeleton):
+
+- Loads local FAISS index from `data/index/`
+- Embeds `question` with local HuggingFace model
+- Retrieves top-k chunks (default `k=1`)
+- Returns retrieved chunks only (no `answer` field yet)
+
 Response example:
 
 ```json
 {
-  "answer": "To reset your password, open the account portal and choose Reset Password.",
-  "used_top_k": 4,
+  "used_top_k": 1,
   "retrieved_chunks": [
     {
-      "chunk_id": "doc_001_chunk_003",
-      "doc_id": "doc_001",
-      "score": 0.87,
-      "text": "...",
-      "source": "employee_handbook.md"
+      "chunk_id": "doc_1_chunk_3",
+      "doc_id": "doc_1",
+      "score": 0.2451,
+      "text": "### Password Reset ...",
+      "source": "company_it_support_playbook.md"
     }
   ]
 }
