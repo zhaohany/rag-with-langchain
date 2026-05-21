@@ -1,5 +1,6 @@
 from __future__ import annotations
-
+import re
+from collections import deque
 
 def split_into_chunks(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
     if chunk_size <= 0:
@@ -90,4 +91,35 @@ def split_into_recursive_chunks(text: str, chunk_size: int, chunk_overlap: int) 
     - Expected output:
       - timeline part split into overlapping windows via `split_into_chunks`.
     """
-    raise NotImplementedError("Homework: implement recursive structure-aware chunking")
+    if chunk_size <= 0:
+        raise ValueError("chunk_size must be > 0")
+    if chunk_overlap < 0:
+        raise ValueError("chunk_overlap must be >= 0")
+    if chunk_overlap >= chunk_size:
+        raise ValueError("chunk_overlap must be smaller than chunk_size")
+
+    normalized = text.strip()
+    if not normalized:
+        return []
+
+    chunks: list[str] = []
+
+    x = re.split(r"(?<!#)(?=##(?!#))", normalized)
+    matches = deque(x)
+
+    while len(matches) > 0:
+        match = matches.popleft()
+        if len(match) < 1:
+            continue
+
+        if len(match) <= chunk_size:
+            chunks.append(match.strip())
+
+        else:
+            if "###" in match:
+                x = re.split(r"(?<!#)(?=###(?!#))", match.strip())
+                matches.extendleft(x)
+            else:
+                chunks += split_into_chunks(match, chunk_size, chunk_overlap)
+
+    return chunks
