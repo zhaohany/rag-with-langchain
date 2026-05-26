@@ -9,7 +9,7 @@ from app.core.config import settings
 
 
 class PromptService:
-    _SUPPORTED_VERSIONS = {"v1", "v3"}
+    _SUPPORTED_VERSIONS = {"v1", "v2", "v3"}
 
     def build_and_persist_prompt(
         self,
@@ -20,20 +20,26 @@ class PromptService:
 
         Simplified class instruction:
         - Keep this service focused on template rendering + local persistence.
-        - Do not decide retrieval formatting here; `context_blocks` is passed in.
+        - Build prompt only after `retrieved_chunks` are ready.
+        - Placeholder mapping below is intentionally minimal for class demo.
         """
         prompt_version = settings.prompt_version.strip().lower()
         if prompt_version not in self._SUPPORTED_VERSIONS:
             raise ValueError(f"unsupported prompt_version: {settings.prompt_version}")
 
-        template_path = settings.prompts_dir / f"query_prompt_{prompt_version}.txt"
+        template_path = settings.prompts_dir / f"query_prompt_{prompt_version}.md"
         template_text = template_path.read_text(encoding="utf-8")
         template = PromptTemplate.from_template(template_text)
 
-        # Minimal variable replacement example used in this lesson.
+        # Homework instruction:
+        # If students add new placeholders in `query_prompt_v2.md`,
+        # they must update this inline mapping accordingly.
         final_prompt = template.format(
             question=question,
             context_blocks=retrieved_chunks if retrieved_chunks else "(no retrieved context)",
+            top_k=settings.query_top_k,
+            company_policy_version="v1",
+            response_language="zh-CN",
         )
 
         self._ensure_parent_dir(settings.final_prompt_path)
