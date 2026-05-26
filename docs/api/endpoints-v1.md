@@ -70,6 +70,7 @@ Behavior (current skeleton):
 - Loads local FAISS index from `data/index/`
 - Embeds `question` with local HuggingFace model
 - Retrieves top-k chunks (default `k=1`)
+- Builds final query prompt from template and retrieved context, then writes to `data/prompts/final_prompt.txt`
 - Returns retrieved chunks only (no `answer` field yet)
 
 Response example:
