@@ -89,7 +89,19 @@ class QueryService:
         - add strict metadata checks and fallback policy
         - standardize score formatting/rounding
         """
-        raise NotImplementedError("Homework: implement retrieved chunk normalization")
+
+        chunk_id = str(metadata.get("chunk_id", ""))
+        doc_id = str(metadata.get("doc_id", ""))
+        score = round(raw_score, 3)
+        source = str(metadata.get("source", ""))
+
+        return {
+                "chunk_id": chunk_id,
+                "doc_id": doc_id,
+                "score": score,
+                "text": text,
+                "source": source
+                }
 
 
 query_service = QueryService()
