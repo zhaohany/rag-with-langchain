@@ -32,14 +32,11 @@ class PromptService:
         template = PromptTemplate.from_template(template_text)
 
         # Homework instruction:
-        # If students add new placeholders in `query_prompt_v2.md`,
-        # they must update this inline mapping accordingly.
+        # If add new placeholders in `query_prompt_v2.md`,
+        # update this inline mapping accordingly.
         final_prompt = template.format(
             question=question,
             context_blocks=retrieved_chunks if retrieved_chunks else "(no retrieved context)",
-            top_k=settings.query_top_k,
-            company_policy_version="v1",
-            response_language="zh-CN",
         )
 
         self._ensure_parent_dir(settings.final_prompt_path)

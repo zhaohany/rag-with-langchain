@@ -47,9 +47,6 @@ class QueryService:
         for doc, raw_score in matches:
             retrieved_chunks.append(self._build_retrieved_chunk(doc.page_content, doc.metadata, raw_score))
 
-        # Homework instruction:
-        # Prompt assembly must be built on top of normalized `retrieved_chunks`.
-        # Students should keep this order and customize prompt/template details only.
         prompt_service.build_and_persist_prompt(
             question=normalized_question,
             retrieved_chunks=retrieved_chunks,
