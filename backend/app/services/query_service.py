@@ -5,13 +5,12 @@ from typing import Any
 from langchain_community.vectorstores import FAISS
 
 from app.core.config import settings
-from app.services.prompt_service import prompt_service
 from app.shared.embedding import get_embedding_model
 
 
 class QueryService:
     def run_query(self, question: str) -> dict[str, Any]:
-        """Run retrieval flow and persist a final prompt example.
+        """Run retrieval-only query flow (no answer generation).
 
         Input:
         - `question`: user question string.
@@ -24,12 +23,10 @@ class QueryService:
         Current scope:
         1) Embed the question with the preloaded embedding model.
         2) Retrieve top-k chunks from local FAISS.
-        3) Normalize chunks (student implementation).
-        4) Build `context_blocks` from normalized chunks (example strategy).
-        5) Render prompt template with `{context_blocks}` + `{question}` and
-           persist to `data/prompts/final_prompt.txt`.
+        3) Return chunk metadata + raw text only.
 
         Out of scope:
+        - Prompt building
         - LLM answer generation
         - Multi-turn memory
         """
@@ -46,11 +43,6 @@ class QueryService:
         retrieved_chunks: list[dict[str, Any]] = []
         for doc, raw_score in matches:
             retrieved_chunks.append(self._build_retrieved_chunk(doc.page_content, doc.metadata, raw_score))
-
-        prompt_service.build_and_persist_prompt(
-            question=normalized_question,
-            retrieved_chunks=retrieved_chunks,
-        )
 
         return {"used_top_k": top_k, "retrieved_chunks": retrieved_chunks}
 
@@ -98,5 +90,6 @@ class QueryService:
         - standardize score formatting/rounding
         """
         raise NotImplementedError("Homework: implement retrieved chunk normalization")
+
 
 query_service = QueryService()

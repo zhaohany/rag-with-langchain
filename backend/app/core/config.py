@@ -24,9 +24,6 @@ class Settings(BaseSettings):
     chunk_size: int = 800
     chunk_overlap: int = 120
     query_top_k: int = 1
-    prompt_version: str = "v1"
-    prompts_dir: Path = REPO_ROOT / "data/prompts"
-    final_prompt_path: Path = REPO_ROOT / "data/prompts/final_prompt.txt"
 
 
 settings = Settings()
