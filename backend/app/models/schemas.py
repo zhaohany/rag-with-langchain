@@ -37,6 +37,7 @@ class RetrievedChunk(BaseModel):
 
 
 class QueryResponse(BaseModel):
+    answer: str | None = None
     used_top_k: int
     retrieved_chunks: list[RetrievedChunk]
 

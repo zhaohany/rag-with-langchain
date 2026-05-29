@@ -5,6 +5,7 @@ from typing import Any
 from langchain_community.vectorstores import FAISS
 
 from app.core.config import settings
+from app.services.generation_service import generation_service
 from app.services.prompt_service import prompt_service
 from app.shared.embedding import get_embedding_model
 
@@ -47,12 +48,13 @@ class QueryService:
         for doc, raw_score in matches:
             retrieved_chunks.append(self._build_retrieved_chunk(doc.page_content, doc.metadata, raw_score))
 
-        prompt_service.build_and_persist_prompt(
+        prompt = prompt_service.build_and_persist_prompt(
             question=normalized_question,
             retrieved_chunks=retrieved_chunks,
         )
+        answer = generation_service.generate_answer(prompt)
 
-        return {"used_top_k": top_k, "retrieved_chunks": retrieved_chunks}
+        return {"answer": answer, "used_top_k": top_k, "retrieved_chunks": retrieved_chunks}
 
     def _load_vector_store(self) -> FAISS:
         index_dir = str(settings.index_path.parent)
