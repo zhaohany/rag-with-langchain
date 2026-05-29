@@ -74,7 +74,7 @@ answer:
 ```
 
 [CONTEXT]
-{context}
+{context_blocks}
 
 [USER QUESTION]
 {question}
