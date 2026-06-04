@@ -30,10 +30,6 @@ class PromptService:
         template_path = settings.prompts_dir / f"query_prompt_{prompt_version}.md"
         template_text = template_path.read_text(encoding="utf-8")
         template = PromptTemplate.from_template(template_text)
-
-        # Homework instruction:
-        # If add new placeholders in `query_prompt_v2.md`,
-        # update this inline mapping accordingly.
         final_prompt = template.format(
             question=question,
             context_blocks=retrieved_chunks if retrieved_chunks else "(no retrieved context)",
