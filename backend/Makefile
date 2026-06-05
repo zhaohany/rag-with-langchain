@@ -7,11 +7,11 @@ test:
 	$(PYTEST)
 
 test-unit:
-	$(PYTEST) tests/exercises/pytest_examples.py tests/exercises/chunking_unit_exercise.py tests/exercises/health_service_unit_exercise.py -v
+	$(PYTEST) tests/test_chunking.py tests/test_health_service.py -v
 
 test-one:
 	@if [ -z "$(TEST)" ]; then \
-		echo "Usage: make test-one TEST=tests/exercises/chunking_unit_exercise.py::test_split_markdown_chunks_returns_empty_list_for_blank_text"; \
+		echo "Usage: make test-one TEST=tests/test_chunking.py::test_split_markdown_chunks_returns_empty_list_for_blank_text"; \
 		exit 1; \
 	fi
 	$(PYTEST) $(TEST) -v
