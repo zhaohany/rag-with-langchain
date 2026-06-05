@@ -1,16 +1,21 @@
-# Pytest Unit Testing Assignment
+# Pytest Unit Testing Exercise
 
 ## Goal
 
 Practice writing focused pytest unit tests for small backend functions without starting FastAPI, calling LLMs, building FAISS indexes, or using the network.
 
-## What Students Should Edit
+## Files To Edit
 
-Only edit:
+Exercise files:
 
-- `backend/tests/student_unit_assignment.py`
+- `backend/tests/exercises/chunking_unit_exercise.py`
+- `backend/tests/exercises/health_service_unit_exercise.py`
 
-Do not edit production code unless the instructor explicitly asks you to.
+Reference examples:
+
+- `backend/tests/exercises/pytest_examples.py`
+
+Do not edit production code unless the exercise explicitly asks you to.
 
 ## Setup
 
@@ -33,7 +38,7 @@ make test-unit
 Run one scenario:
 
 ```bash
-make test-one TEST=tests/student_unit_assignment.py::test_split_markdown_chunks_returns_empty_list_for_blank_text
+make test-one TEST=tests/exercises/chunking_unit_exercise.py::test_split_markdown_chunks_returns_empty_list_for_blank_text
 ```
 
 Run all backend tests:
@@ -42,9 +47,9 @@ Run all backend tests:
 make test
 ```
 
-## Assignment Scenarios
+## Exercise Scenarios
 
-Replace each `pytest.fail(...)` placeholder in `backend/tests/student_unit_assignment.py` with the production function call and assertions. The setup data is already provided for each scenario.
+Replace each `pytest.fail(...)` placeholder in the exercise files with the production function call and assertions. The setup data is already provided for each scenario.
 
 Required scenarios:
 
@@ -55,13 +60,13 @@ Required scenarios:
 - `HealthService.get_status()` reads valid system metadata JSON
 - `HealthService.get_status()` falls back to defaults when metadata JSON is invalid
 
-Reference examples already included in the test file:
+Reference examples are included in `backend/tests/exercises/pytest_examples.py`:
 
 - `test_example_plain_assertion` shows a basic function call plus `assert`
 - `test_example_pytest_raises` shows `pytest.raises(...)`
 
-## Expected Student Outcome
+## Expected Outcome
 
-Before implementation, `make test-unit` should show the two reference examples passing and the student placeholders failing intentionally.
+Before implementation, `make test-unit` should show the two reference examples passing and the exercise placeholders failing intentionally.
 
-After students complete the tests, `make test-unit` should pass.
+After completing the exercise, `make test-unit` should pass.
