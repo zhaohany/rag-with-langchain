@@ -1,36 +1,22 @@
 from __future__ import annotations
 
-import json
+from typing import Union
 
 from app.core.config import settings
+from app.services.database_store import database_store
 
 
 class HealthService:
-    def get_status(self) -> dict[str, str | int | None]:
-        ingestion_status = "idle"
-        last_success_ingestion_time: str | None = None
-        total_docs = 0
-
-        if settings.system_meta_path.exists():
-            try:
-                raw = json.loads(settings.system_meta_path.read_text(encoding="utf-8"))
-                if isinstance(raw, dict):
-                    ingestion_status = str(raw.get("ingestion_status", "idle"))
-                    last_value = raw.get("last_success_ingestion_time")
-                    last_success_ingestion_time = str(last_value) if last_value else None
-                    total_docs = int(raw.get("total_docs", 0))
-            except (OSError, ValueError, TypeError, json.JSONDecodeError):
-                ingestion_status = "idle"
-                last_success_ingestion_time = None
-                total_docs = 0
+    def get_status(self) -> dict[str, Union[str, int, None]]:
+        meta = database_store.get_system_meta()
 
         return {
             "status": "ok",
             "version": settings.app_version,
             "environment": settings.env,
-            "ingestion_status": ingestion_status,
-            "last_success_ingestion_time": last_success_ingestion_time,
-            "total_docs": total_docs,
+            "ingestion_status": str(meta.get("ingestion_status") or "idle"),
+            "last_success_ingestion_time": str(meta["last_success_ingestion_time"]) if meta.get("last_success_ingestion_time") else None,
+            "total_docs": int(meta.get("total_docs") or 0),
         }
 
 

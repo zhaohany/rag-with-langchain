@@ -216,6 +216,9 @@ data/index/*
 data/meta/*
 !data/meta/.gitkeep
 !data/meta/metadata.json
+!data/meta/rag.sqlite3
+data/meta/*.sqlite3-wal
+data/meta/*.sqlite3-shm
 data/system/*
 !data/system/.gitkeep
 !data/system/system_meta.json

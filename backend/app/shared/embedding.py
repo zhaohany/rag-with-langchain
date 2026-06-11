@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from typing import Optional
 
 from langchain_huggingface import HuggingFaceEmbeddings
 
@@ -11,7 +12,7 @@ os.environ.setdefault("KMP_INIT_AT_FORK", "FALSE")
 os.environ.setdefault("OMP_NUM_THREADS", "1")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
-_embedding_model: HuggingFaceEmbeddings | None = None
+_embedding_model: Optional[HuggingFaceEmbeddings] = None
 
 
 def preload_embedding_model() -> None:

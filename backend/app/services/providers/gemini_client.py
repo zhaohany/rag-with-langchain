@@ -17,11 +17,7 @@ class GeminiClientError(RuntimeError):
 
 class GeminiClient:
     def generate_content(self, prompt: str) -> str:
-        """Homework: implement Gemini SDK call in the try block.
-
-        Keep pre-validation and post-validation unchanged.
-        Students should complete only the API invocation block.
-        """
+        """Generate answer JSON with Gemini after validating local configuration."""
         if not isinstance(prompt, str) or not prompt.strip():
             raise GeminiClientError("Prompt must be a non-empty string.")
 

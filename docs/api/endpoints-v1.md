@@ -33,13 +33,13 @@ Behavior:
 - Splits content into overlapping chunks
 - Embeds chunks with local HuggingFace model
 - Writes FAISS index to `data/index/faiss.index`
-- Writes chunk metadata to `data/meta/metadata.json`
-- Updates ingest status in `data/system/system_meta.json`
+- Writes chunk metadata to SQLite at `data/meta/rag.sqlite3`
+- Updates ingest status in SQLite at `data/meta/rag.sqlite3`
 
 Failure:
 
 - Returns `HTTP 500` with `detail` if ingest fails
-- Sets `ingestion_status` to `failed` in system metadata
+- Sets `ingestion_status` to `failed` in SQLite system metadata
 
 Response example:
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -8,7 +10,7 @@ class HealthResponse(BaseModel):
     version: str
     environment: str
     ingestion_status: str
-    last_success_ingestion_time: str | None
+    last_success_ingestion_time: Optional[str]
     total_docs: int
 
 
@@ -25,7 +27,7 @@ class IngestResponse(BaseModel):
 
 class QueryRequest(BaseModel):
     question: str
-    session_id: str | None = None
+    session_id: Optional[str] = None
 
 
 class RetrievedChunk(BaseModel):
@@ -37,7 +39,7 @@ class RetrievedChunk(BaseModel):
 
 
 class QueryResponse(BaseModel):
-    answer: str | None = None
+    answer: Optional[str] = None
     used_top_k: int
     retrieved_chunks: list[RetrievedChunk]
 

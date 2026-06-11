@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 from langchain_community.vectorstores import FAISS
 
@@ -25,7 +25,7 @@ class QueryService:
         Current scope:
         1) Embed the question with the preloaded embedding model.
         2) Retrieve top-k chunks from local FAISS.
-        3) Normalize chunks (student implementation).
+        3) Normalize retrieved chunks for the API response.
         4) Build `context_blocks` from normalized chunks (example strategy).
         5) Render prompt template with `{context_blocks}` + `{question}` and
            persist to `data/prompts/final_prompt.txt`.
@@ -69,12 +69,10 @@ class QueryService:
     def _build_retrieved_chunk(
         self,
         text: str,
-        metadata: dict[str, Any] | None,
+        metadata: Optional[dict[str, Any]],
         raw_score: float,
     ) -> dict[str, Any]:
-        """Homework function: normalize one retrieved result for API response.
-
-        Students should implement this function as the core exercise.
+        """Normalize one retrieved result for API response.
 
         Input:
         - `text`: retrieved chunk text (`Document.page_content`)
@@ -93,24 +91,19 @@ class QueryService:
         2) Always cast values to expected types.
         3) Use safe defaults when metadata keys are absent.
         4) Keep result deterministic and JSON-serializable.
-
-        Suggested student improvements:
-        - validate empty text/metadata edge cases
-        - add strict metadata checks and fallback policy
-        - standardize score formatting/rounding
         """
-
+        metadata = metadata or {}
         chunk_id = str(metadata.get("chunk_id", ""))
         doc_id = str(metadata.get("doc_id", ""))
         score = round(raw_score, 3)
         source = str(metadata.get("source", ""))
 
         return {
-                "chunk_id": chunk_id,
-                "doc_id": doc_id,
-                "score": score,
-                "text": text,
-                "source": source
-                }
+            "chunk_id": chunk_id,
+            "doc_id": doc_id,
+            "score": score,
+            "text": text,
+            "source": source,
+        }
 
 query_service = QueryService()

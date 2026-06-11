@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-import json
+import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Union
 
 from langchain_core.runnables import RunnableLambda
 from langchain_community.vectorstores import FAISS
 
 from app.core.config import settings
+from app.services.database_store import database_store
 from app.shared.chunking import split_markdown_chunks
 from app.shared.embedding import get_embedding_model
 from app.shared.ids import make_chunk_id, make_doc_id
@@ -41,14 +42,9 @@ def remove_faiss_index(index_path: Path) -> None:
             candidate.unlink()
 
 
-def write_metadata(records: list[dict[str, Any]], metadata_path: Path) -> None:
-    metadata_path.parent.mkdir(parents=True, exist_ok=True)
-    metadata_path.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
-
-
 class IngestService:
-    def _set_status(self, ingestion_status: str, previous_meta: dict[str, str | int | None]) -> None:
-        self._write_system_meta({"ingestion_status": ingestion_status, **previous_meta})
+    def _set_status(self, ingestion_status: str, previous_meta: dict[str, Union[str, int, None]]) -> None:
+        self._write_system_meta({**previous_meta, "ingestion_status": ingestion_status})
 
     def _step_discover(self, payload: dict[str, Any]) -> dict[str, Any]:
         payload["docs"] = discover_markdown_files(settings.raw_docs_dir)
@@ -96,7 +92,7 @@ class IngestService:
         else:
             remove_faiss_index(settings.index_path)
 
-        write_metadata(payload["records"], settings.metadata_path)
+        database_store.replace_chunk_metadata(payload["records"])
         return payload
 
     def run_sync_ingest(self) -> dict[str, Any]:
@@ -124,31 +120,15 @@ class IngestService:
             )
 
             return {"status": "success", "total_docs": total_docs, "total_chunks": len(records), "message": "Ingestion completed"}
-        except (OSError, ValueError, RuntimeError) as exc:
+        except (OSError, ValueError, RuntimeError, sqlite3.DatabaseError) as exc:
             self._set_status("failed", previous_meta)
             raise RuntimeError(f"Ingestion failed: {exc}") from exc
 
-    def _read_system_meta(self) -> dict[str, str | int | None]:
-        if not settings.system_meta_path.exists():
-            return {"last_success_ingestion_time": None, "total_docs": 0}
+    def _read_system_meta(self) -> dict[str, Union[str, int, None]]:
+        return database_store.get_system_meta()
 
-        try:
-            raw = json.loads(settings.system_meta_path.read_text(encoding="utf-8"))
-            if not isinstance(raw, dict):
-                raise ValueError("Invalid system meta format")
-            return {
-                "last_success_ingestion_time": raw.get("last_success_ingestion_time"),
-                "total_docs": int(raw.get("total_docs") or 0),
-            }
-        except (OSError, ValueError, TypeError, json.JSONDecodeError):
-            return {"last_success_ingestion_time": None, "total_docs": 0}
-
-    def _write_system_meta(self, payload: dict[str, str | int | None]) -> None:
-        settings.system_meta_path.parent.mkdir(parents=True, exist_ok=True)
-        settings.system_meta_path.write_text(
-            json.dumps(payload, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
+    def _write_system_meta(self, payload: dict[str, Union[str, int, None]]) -> None:
+        database_store.write_system_meta(payload)
 
 
 ingest_service = IngestService()
