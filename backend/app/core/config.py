@@ -9,7 +9,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="RAG_")
+    model_config = SettingsConfigDict(env_file= REPO_ROOT / ".env", env_prefix="RAG_", extra="ignore")
 
     app_name: str = "rag-with-langchain"
     app_version: str = "0.1.0"
@@ -23,6 +23,13 @@ class Settings(BaseSettings):
     embedding_batch_size: int = 32
     chunk_size: int = 800
     chunk_overlap: int = 120
+    query_top_k: int = 1
+    gemini_api_key: str | None = None
+    gemini_model: str = "models/gemini-2.5-flash"
+    llm_max_output_tokens: int = 256
+    prompt_version: str = "v1"
+    prompts_dir: Path = REPO_ROOT / "data/prompts"
+    final_prompt_path: Path = REPO_ROOT / "data/prompts/final_prompt.txt"
 
 
 settings = Settings()

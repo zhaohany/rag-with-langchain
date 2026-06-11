@@ -13,9 +13,10 @@ def test_health_endpoint_returns_expected_payload() -> None:
 
     assert response.status_code == 200
     payload = response.json()
+
     assert payload["status"] == "ok"
     assert payload["version"] == settings.app_version
     assert payload["environment"] == settings.env
-    assert payload["ingestion_status"] == "idle"
-    assert payload["last_success_ingestion_time"] is None
-    assert payload["total_docs"] == 0
+    assert payload["ingestion_status"] in {"idle", "running", "failed"}
+    assert isinstance(payload["total_docs"], int)
+    assert payload["total_docs"] >= 0

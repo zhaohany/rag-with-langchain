@@ -1,19 +1,20 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, HTTPException
 
-from app.models.schemas import NotImplementedResponse, QueryRequest
+from app.models.schemas import QueryRequest, QueryResponse
+from app.services.query_service import query_service
 
 router = APIRouter(tags=["query"])
 
 
 @router.post(
     "/query",
-    response_model=NotImplementedResponse,
-    status_code=status.HTTP_501_NOT_IMPLEMENTED,
+    response_model=QueryResponse,
 )
-def query(_payload: QueryRequest) -> NotImplementedResponse:
-    return NotImplementedResponse(
-        status="not_implemented",
-        message="Query API schema is ready. Implementation will be done in class.",
-    )
+def query(payload: QueryRequest) -> QueryResponse:
+    try:
+        result = query_service.run_query(payload.question)
+    except (OSError, ValueError, RuntimeError) as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    return QueryResponse.model_validate(result)
