@@ -9,7 +9,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="RAG_")
+    model_config = SettingsConfigDict(env_file= REPO_ROOT / ".env", env_prefix="RAG_", extra="ignore")
 
     app_name: str = "rag-with-langchain"
     app_version: str = "0.1.0"

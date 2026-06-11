@@ -36,8 +36,25 @@ class GeminiClient:
             )
 
         try:
-            # TODO(homework): implement Gemini API call.
-            raise NotImplementedError("Homework: implement Gemini API call in gemini_client.py")
+            client = genai.Client(api_key=api_key)
+
+            response = client.models.generate_content(
+                model=settings.gemini_model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=0.5,
+                    top_p=0.5,
+                    max_output_tokens=1024,
+                    response_mime_type="application/json",
+                    response_schema={
+                        "type": "object",
+                        "properties": {
+                            "answer": {"type": "string"}
+                        },
+                        "required": ["answer"]
+                    }
+                )
+            )
         except errors.APIError as exc:
             raise GeminiClientError(f"Gemini API error: {exc}") from exc
         except Exception as exc:
