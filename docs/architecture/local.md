@@ -28,7 +28,7 @@
    - 读取本地文档
    - 文本切分
    - embedding
-   - 写入向量索引和 metadata
+   - 写入向量索引和 SQLite metadata
 
 2. `POST /api/v1/query`
    - 接收用户问题

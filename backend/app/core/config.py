@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -19,12 +20,13 @@ class Settings(BaseSettings):
     raw_docs_dir: Path = REPO_ROOT / "data/raw_docs"
     index_path: Path = REPO_ROOT / "data/index/faiss.index"
     metadata_path: Path = REPO_ROOT / "data/meta/metadata.json"
+    database_path: Path = REPO_ROOT / "data/meta/rag.sqlite3"
     embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
     embedding_batch_size: int = 32
     chunk_size: int = 800
     chunk_overlap: int = 120
     query_top_k: int = 1
-    gemini_api_key: str | None = None
+    gemini_api_key: Optional[str] = None
     gemini_model: str = "models/gemini-2.5-flash"
     llm_max_output_tokens: int = 256
     prompt_version: str = "v1"

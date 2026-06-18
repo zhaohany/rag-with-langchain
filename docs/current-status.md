@@ -5,7 +5,7 @@
 ## 功能完成度
 
 - health：可用
-- ingest：可用（discover + recursive chunking + embedding + index/meta/system 落盘）
+- ingest：可用（discover + recursive chunking + embedding + FAISS index + SQLite metadata/system 状态落盘）
 - query：可用（retrieval + prompt 组装与落盘），但仍未接入 LLM 生成最终答案
 
 ---
@@ -20,7 +20,7 @@
 ### Health（已可用于状态观测）
 
 - `GET /api/v1/health` 返回服务状态、环境、版本、ingest 状态、最后成功时间、文档数
-- 会读取 `data/system/system_meta.json`，读取失败时回退默认值
+- 会读取 SQLite system metadata，读取失败时回退默认值
 - 实现位置：`backend/app/services/health_service.py`
 
 ### Ingest（已是完整可执行链路）
@@ -31,7 +31,7 @@
   - 按 Markdown 标题 + RecursiveCharacterTextSplitter 分块
   - 使用本地 embedding 模型向量化
   - 写入本地 FAISS 索引
-  - 写入 metadata 与 system meta
+  - 写入 SQLite metadata 与 system meta
 - 关键实现：`backend/app/services/ingest_service.py`、`backend/app/shared/chunking.py`
 
 ### Query（已完成检索主链路，未完成答案生成）
@@ -55,8 +55,7 @@
 
 - `data/index/faiss.faiss`
 - `data/index/faiss.pkl`
-- `data/meta/metadata.json`
-- `data/system/system_meta.json`
+- `data/meta/rag.sqlite3`
 
 ---
 
@@ -87,13 +86,12 @@
 
 ### DB Enhancement：从静态文件迁移到 SQLite
 
-- 当前状态：未开始
+- 当前状态：部分完成
 - 目标：将 metadata、ingest/query 运行记录、文档源信息等从静态 JSON 文件逐步迁移到 SQLite 实例
 - 初步范围：
-  - 设计 SQLite schema（documents、chunks、ingest_runs、query_runs、sources）
-  - 保留 FAISS index 文件作为向量索引产物，SQLite 负责结构化 metadata 与运行状态
-  - 为 health/query/ingest 提供更稳定的状态读取与审计能力
-  - 增加迁移脚本或初始化脚本，避免手工维护 `data/meta/*.json`
+  - 已完成：保留 FAISS index 文件作为向量索引产物，SQLite 负责 chunk metadata 与 ingest 状态
+  - 待完成：扩展 SQLite schema（documents、ingest_runs、query_runs、sources）
+  - 待完成：为 query 运行记录提供更稳定的审计能力
 
 ### Docker 化
 
