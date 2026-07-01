@@ -1,9 +1,10 @@
 # 项目当前整体状态（持续更新）
 
-更新时间：2026-06-04
+更新时间：2026-07-01
 
 ## 功能完成度
 
+- CI：可用（`.github/workflows/ci.yml`，PR 触发单元测试 + Docker 构建校验）
 - health：可用
 - ingest：可用（discover + recursive chunking + embedding + FAISS index + SQLite metadata/system 状态落盘）
 - query：可用（retrieval + prompt 组装与落盘），但仍未接入 LLM 生成最终答案

@@ -1,10 +1,15 @@
 PYTEST ?= python3 -m pytest
 TEST ?=
 
-.PHONY: test test-unit test-one
+.PHONY: test test-ci test-unit test-one
 
 test:
 	$(PYTEST)
+
+# CI-friendly target: only the tests expected to pass (health service + health API).
+# Chunking tests are a separate student exercise and are not part of CI.
+test-ci:
+	$(PYTEST) tests/test_health_api.py tests/test_health_service.py -v
 
 test-unit:
 	$(PYTEST) tests/test_chunking.py tests/test_health_service.py -v
