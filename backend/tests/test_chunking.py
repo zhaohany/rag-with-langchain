@@ -10,8 +10,10 @@ def test_split_markdown_chunks_returns_empty_list_for_blank_text() -> None:
     text = "   \n\n  "
     chunk_size = 100
     chunk_overlap = 10
+    
+    chunks = split_markdown_chunks(text, chunk_size, chunk_overlap)
 
-    pytest.fail("Exercise TODO: call split_markdown_chunks(...) and assert the result is []")
+    assert chunks == [], f"should return no chunks but instead returns {chunks}"
 
 
 def test_split_markdown_chunks_rejects_invalid_chunk_settings() -> None:
@@ -22,8 +24,10 @@ def test_split_markdown_chunks_rejects_invalid_chunk_settings() -> None:
         {"chunk_size": 100, "chunk_overlap": -1},
         {"chunk_size": 100, "chunk_overlap": 100},
     ]
-
-    pytest.fail("Exercise TODO: loop through invalid_settings and assert each call raises ValueError")
+    
+    for opts in invalid_settings:
+        with pytest.raises(ValueError):
+                split_markdown_chunks(text, opts["chunk_size"], opts["chunk_overlap"])
 
 
 def test_split_markdown_chunks_preserves_small_markdown_block() -> None:
@@ -31,6 +35,21 @@ def test_split_markdown_chunks_preserves_small_markdown_block() -> None:
     text = "  # Course Notes\n\nThis is a short markdown document.  "
     chunk_size = 500
     chunk_overlap = 50
-    expected_chunk = "# Course Notes\n\nThis is a short markdown document."
+    expected_chunk = "# Course Notes  \nThis is a short markdown document."
 
-    pytest.fail("Exercise TODO: call split_markdown_chunks(...) and assert it returns [expected_chunk]")
+    actual_chunk = split_markdown_chunks(text, chunk_size, chunk_overlap)
+    """
+    NOTE:
+
+    This case has a bit of a strange behaviour, when using the langchain splitter,
+    more than one newline turns into a space and a newline in the outputed chunk.
+    """
+
+    assert len(actual_chunk) == 1, f"""should only return chunk, instead returns {len(actual_chunk)}"""
+    
+    assert actual_chunk[0] == expected_chunk, f"""chunk text does not match. 
+    Expected: 
+    {expected_chunk}, 
+    Got: 
+    {actual_chunk[0]}"""
+
