@@ -39,6 +39,29 @@ jobs:
 
   # Job 2: verify that the backend can be packaged as a Docker image.
   # It waits for tests to pass before spending time on Docker build.
+  #
+  # ===== HOMEWORK: Docker Build =====
+  #
+  # Goal:
+  #   Make this job pass by creating a Dockerfile at the project root.
+  #
+  # What the CI does:
+  #   docker build -t rag-chatbot-backend:ci .
+  #
+  # Your Dockerfile must:
+  #   1. Start from python:3.11-slim
+  #   2. Set WORKDIR /app
+  #   3. COPY backend/requirements.txt . && RUN pip install --no-cache-dir -r requirements.txt
+  #   4. COPY backend/ .
+  #   5. EXPOSE 8000
+  #   6. CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+  #
+  # Test locally:
+  #   docker build -t rag-chatbot-backend:ci .
+  #   docker run -p 8000:8000 rag-chatbot-backend:ci
+  #   curl http://127.0.0.1:8000/api/v1/health
+  #
+  # Tip: add a .dockerignore to exclude .git/ .venv/ __pycache__/ data/ docs/ frontend/ mlops/ plans/
   build:
     runs-on: ubuntu-latest
     needs: test
