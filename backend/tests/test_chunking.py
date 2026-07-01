@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from app.shared.chunking import split_markdown_chunks
 
 
@@ -9,9 +11,7 @@ def test_split_markdown_chunks_returns_empty_list_for_blank_text() -> None:
     chunk_size = 100
     chunk_overlap = 10
 
-    result = split_markdown_chunks(text, chunk_size, chunk_overlap)
-
-    assert result == []
+    pytest.fail("Exercise TODO: call split_markdown_chunks(...) and assert the result is []")
 
 
 def test_split_markdown_chunks_rejects_invalid_chunk_settings() -> None:
@@ -23,12 +23,7 @@ def test_split_markdown_chunks_rejects_invalid_chunk_settings() -> None:
         {"chunk_size": 100, "chunk_overlap": 100},
     ]
 
-    for settings in invalid_settings:
-        try:
-            split_markdown_chunks(text, settings["chunk_size"], settings["chunk_overlap"])
-            assert False, f"Expected ValueError for {settings}"
-        except ValueError:
-            pass
+    pytest.fail("Exercise TODO: loop through invalid_settings and assert each call raises ValueError")
 
 
 def test_split_markdown_chunks_preserves_small_markdown_block() -> None:
@@ -36,8 +31,6 @@ def test_split_markdown_chunks_preserves_small_markdown_block() -> None:
     text = "  # Course Notes\n\nThis is a short markdown document.  "
     chunk_size = 500
     chunk_overlap = 50
-    expected_chunk = "# Course Notes  \nThis is a short markdown document."
+    expected_chunk = "# Course Notes\n\nThis is a short markdown document."
 
-    result = split_markdown_chunks(text, chunk_size, chunk_overlap)
-
-    assert result == [expected_chunk]
+    pytest.fail("Exercise TODO: call split_markdown_chunks(...) and assert it returns [expected_chunk]")

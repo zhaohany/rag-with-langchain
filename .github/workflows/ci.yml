@@ -33,7 +33,7 @@ jobs:
 
       # Fail the workflow if any unit test fails.
       - name: Run unit tests
-        run: make test
+        run: make test-ci
 
   # Job 2: verify that the backend can be packaged as a Docker image.
   # It waits for tests to pass before spending time on Docker build.
