@@ -1,0 +1,141 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Any
+
+from fastapi import BackgroundTasks
+
+from app.services.database_store import DatabaseStore, database_store
+from app.services.ingest_service import IngestService, ingest_service
+
+
+class IngestJobAlreadyRunningError(RuntimeError):
+    pass
+
+
+@dataclass(frozen=True)
+class IngestJob:
+    job_id: str
+
+
+def build_queued_ingest_response(job_id: str) -> dict[str, Any]:
+    """Build the API response after an ingestion job is queued.
+
+    POST /ingest no longer runs embedding synchronously.
+    It hands off to IngestQueueService and returns immediately.
+
+    Input:
+    job_id: ingestion job id, for example "ingest_20260628_123456"
+
+    Output:
+    dict with keys:
+    - status: "queued"
+    - job_id: same job_id from input
+    - total_docs: 0
+    - total_chunks: 0
+    - message: "Ingestion job submitted"
+
+    Example:
+    build_queued_ingest_response("ingest_20260628_123456")
+    -> {
+        "status": "queued",
+        "job_id": "ingest_20260628_123456",
+        "total_docs": 0,
+        "total_chunks": 0,
+        "message": "Ingestion job submitted",
+    }
+    """
+    return {
+        "status": "queued",
+        "job_id": job_id,
+        "total_docs": 0,
+        "total_chunks": 0,
+        "message": "Ingestion job submitted",
+    }
+
+
+class IngestQueueService:
+    """Queue wrapper for ingestion jobs.
+
+    This class uses FastAPI BackgroundTasks as the local background runner.
+    One POST /ingest request creates one job that rebuilds the full local index.
+    """
+
+    def __init__(
+        self,
+        ingest: IngestService | None = None,
+        database: DatabaseStore | None = None,
+    ) -> None:
+        self.ingest_service = ingest or ingest_service
+        self.database = database or database_store
+
+    def submit_ingest_job(self, background_tasks: BackgroundTasks) -> dict[str, Any]:
+        """Create one queued job and ask FastAPI to run it after response."""
+        current_status = str(
+            self.database.get_system_meta().get("ingestion_status") or "idle"
+        )
+        if current_status in {"queued", "running"}:
+            raise IngestJobAlreadyRunningError(
+                f"Ingestion is already {current_status}. Please wait."
+            )
+
+        job = self._create_job()
+        self.database.create_ingest_job(job.job_id, "Ingestion job submitted")
+        self.ingest_service.set_status(
+            "queued",
+            self.ingest_service.get_last_success_ingestion_time(),
+            self.ingest_service.get_total_docs(),
+        )
+        background_tasks.add_task(self.process_ingest_job, job.job_id)
+        return build_queued_ingest_response(job.job_id)
+
+    def _create_job(self) -> IngestJob:
+        now = datetime.now(timezone.utc)
+        job_id = now.strftime("ingest_%Y%m%d_%H%M%S_%f")
+        return IngestJob(job_id=job_id)
+
+    def process_ingest_job(self, job_id: str) -> None:
+        """Run one queued ingestion job.
+
+        This function is called by FastAPI BackgroundTasks after
+        the API response is sent. It delegates embedding to the
+        existing IngestService pipeline instead of reimplementing it.
+
+        Input:
+        job_id: ingestion job id
+
+        Output:
+        None. Results are persisted to FAISS index and SQLite metadata.
+
+        TODO:
+        Call the existing sync ingest pipeline and build a success message.
+        Hint:
+        result = self.ingest_service.run_sync_ingest()
+        message = (
+            "Ingestion completed: "
+            f"docs={result['total_docs']}, chunks={result['total_chunks']}"
+        )
+        """
+        self.database.mark_ingest_job_running(job_id)
+
+        try:
+            # TODO: call existing sync ingest pipeline and build success message.
+            # Hint: use self.ingest_service.run_sync_ingest().
+            raise NotImplementedError(
+                "Call self.ingest_service.run_sync_ingest() and build message."
+            )
+            self.database.mark_ingest_job_succeeded(job_id, message)
+        except RuntimeError as exc:
+            self.database.mark_ingest_job_failed(job_id, str(exc))
+        except Exception as exc:
+            self.ingest_service.set_status(
+                "failed",
+                self.ingest_service.get_last_success_ingestion_time(),
+                self.ingest_service.get_total_docs(),
+            )
+            self.database.mark_ingest_job_failed(job_id, f"Unexpected error: {exc}")
+            raise
+
+
+ingest_queue_service = IngestQueueService()

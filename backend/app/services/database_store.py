@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sqlite3
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional, Union
 
@@ -12,6 +13,10 @@ DEFAULT_SYSTEM_META: dict[str, Union[str, int, None]] = {
     "last_success_ingestion_time": None,
     "total_docs": 0,
 }
+
+
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 class DatabaseStore:
@@ -192,6 +197,101 @@ class DatabaseStore:
             """
         )
         conn.execute("CREATE INDEX IF NOT EXISTS idx_chunks_doc_id ON chunks (doc_id)")
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS ingest_jobs (
+                job_id TEXT PRIMARY KEY,
+                status TEXT NOT NULL,
+                message TEXT,
+                created_at TEXT NOT NULL,
+                started_at TEXT,
+                finished_at TEXT
+            )
+            """
+        )
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_ingest_jobs_status ON ingest_jobs (status)"
+        )
+
+    def create_ingest_job(self, job_id: str, message: str) -> None:
+        """Create one queued ingestion job record.
+
+        After receiving a POST /ingest request, write a job record
+        marking the task as "queued". The background task will pick
+        it up later.
+
+        Input:
+        job_id: ingestion job id, e.g. "ingest_20260628_123456_000000"
+        message: readable job message, e.g. "Ingestion job submitted"
+
+        Output:
+        None. The job row is written to SQLite table `ingest_jobs`.
+
+        TODO(sql):
+        Fill in the SQL statement below. It should insert one row into
+        `ingest_jobs` with:
+        - job_id from input
+        - status = "queued"
+        - message from input
+        - created_at = current UTC timestamp
+        - started_at = NULL
+        - finished_at = NULL
+        """
+        with self._connect() as conn:
+            sql = """
+            INSERT INTO ingest_jobs (
+                -- TODO(sql): fill in the column list.
+                -- Expected columns:
+                -- job_id, status, message, created_at, started_at, finished_at
+            )
+            VALUES (?, 'queued', ?, ?, NULL, NULL)
+            """
+            conn.execute(
+                sql,
+                (job_id, message, utc_now_iso()),
+            )
+
+    def mark_ingest_job_running(self, job_id: str) -> None:
+        """Mark an ingestion job as running."""
+        with self._connect() as conn:
+            conn.execute(
+                """
+                UPDATE ingest_jobs
+                SET status = 'running',
+                    message = 'Ingestion job is running',
+                    started_at = ?
+                WHERE job_id = ?
+                """,
+                (utc_now_iso(), job_id),
+            )
+
+    def mark_ingest_job_succeeded(self, job_id: str, message: str) -> None:
+        """Mark an ingestion job as succeeded."""
+        with self._connect() as conn:
+            conn.execute(
+                """
+                UPDATE ingest_jobs
+                SET status = 'succeeded',
+                    message = ?,
+                    finished_at = ?
+                WHERE job_id = ?
+                """,
+                (message, utc_now_iso(), job_id),
+            )
+
+    def mark_ingest_job_failed(self, job_id: str, message: str) -> None:
+        """Mark an ingestion job as failed."""
+        with self._connect() as conn:
+            conn.execute(
+                """
+                UPDATE ingest_jobs
+                SET status = 'failed',
+                    message = ?,
+                    finished_at = ?
+                WHERE job_id = ?
+                """,
+                (message, utc_now_iso(), job_id),
+            )
 
 
 database_store = DatabaseStore()

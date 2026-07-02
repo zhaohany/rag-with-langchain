@@ -124,6 +124,21 @@ class IngestService:
             self._set_status("failed", previous_meta)
             raise RuntimeError(f"Ingestion failed: {exc}") from exc
 
+    def set_status(self, ingestion_status: str, last_success_time: str | None, total_docs: int) -> None:
+        self._write_system_meta(
+            {
+                "ingestion_status": ingestion_status,
+                "last_success_ingestion_time": last_success_time,
+                "total_docs": total_docs,
+            }
+        )
+
+    def get_last_success_ingestion_time(self) -> str | None:
+        return self._read_system_meta().get("last_success_ingestion_time")
+
+    def get_total_docs(self) -> int:
+        return int(self._read_system_meta().get("total_docs") or 0)
+
     def _read_system_meta(self) -> dict[str, Union[str, int, None]]:
         return database_store.get_system_meta()
 
