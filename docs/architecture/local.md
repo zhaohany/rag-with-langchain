@@ -25,6 +25,7 @@
 ## V1 数据流
 
 1. `POST /api/v1/ingest`
+   - API 立刻返回 `queued`，FastAPI `BackgroundTasks` 在后台执行：
    - 读取本地文档
    - 文本切分
    - embedding

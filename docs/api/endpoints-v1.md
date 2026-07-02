@@ -23,7 +23,9 @@ Response example:
 
 ## POST /api/v1/ingest
 
-用途：触发本地文档 ingest 流程。
+用途：提交一个本地 ingest job。API 会立刻返回 `queued`，实际 embedding / FAISS / SQLite 写入由 FastAPI `BackgroundTasks` 在 response 返回后继续执行。
+
+说明：这不是定时任务，也不是 Redis/Celery 分布式队列。一次 `/ingest` 请求对应一个 job，这个 job 会处理所有 `raw_docs/*.md` 并全量重建本地索引。
 
 Request body: optional (V1 可以为空)
 
@@ -38,6 +40,7 @@ Behavior:
 
 Failure:
 
+- Returns `HTTP 409` with `detail` if another ingest job is already queued or running
 - Returns `HTTP 500` with `detail` if ingest fails
 - Sets `ingestion_status` to `failed` in SQLite system metadata
 
@@ -45,11 +48,19 @@ Response example:
 
 ```json
 {
-  "status": "success",
-  "total_docs": 3,
-  "total_chunks": 18,
-  "message": "Ingestion completed"
+  "status": "queued",
+  "total_docs": 0,
+  "total_chunks": 0,
+  "message": "Ingestion job submitted",
+  "job_id": "ingest_20260628_123456_000000"
 }
+```
+
+Use `GET /api/v1/health` to observe app-level ingestion status:
+
+```text
+queued -> running -> idle
+queued -> running -> failed
 ```
 
 ## POST /api/v1/query

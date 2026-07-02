@@ -23,6 +23,7 @@ class IngestResponse(BaseModel):
     total_docs: int
     total_chunks: int
     message: str
+    job_id: Optional[str] = None
 
 
 class QueryRequest(BaseModel):

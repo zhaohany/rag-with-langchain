@@ -368,6 +368,14 @@ SELECT chunk_id, doc_id, source, chunk_index FROM chunks LIMIT 5;
 - Inserting chunk columns in the wrong order.
 - Removing the existing connection setup instead of using `self._connect()`.
 
+## Bonus: `create_ingest_job` (Ingest Background Job)
+
+After completing the main tasks, open `database_store.py` and find `create_ingest_job`.
+
+This function is used by the new ingest background job feature. It has a `TODO(sql)` asking you to fill in the column list for an INSERT statement.
+
+Refer to the architecture doc at `docs/architecture/ingest-background-job.md` for context.
+
 ## Success Criteria
 
 Your implementation is complete when:
