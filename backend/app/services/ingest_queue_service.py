@@ -22,13 +22,8 @@ class IngestJob:
 def build_queued_ingest_response(job_id: str) -> dict[str, Any]:
     """Build the API response after an ingestion job is queued.
 
-    中文说明：
-    /ingest API 不再同步执行 embedding。
-    它只把任务交给 IngestQueueService，然后立刻返回。
-    这个函数负责组装 API response。
-
-    English keywords:
-    queued response, async API, job id
+    POST /ingest no longer runs embedding synchronously.
+    It hands off to IngestQueueService and returns immediately.
 
     Input:
     job_id: ingestion job id, for example "ingest_20260628_123456"
@@ -103,13 +98,9 @@ class IngestQueueService:
     def process_ingest_job(self, job_id: str) -> None:
         """Run one queued ingestion job.
 
-        中文说明:
-        这个函数由 FastAPI BackgroundTasks 在 API response 返回后执行。
-        它不自己实现 embedding，而是调用已有的 IngestService pipeline。
-        状态更新由这个函数负责，真正的数据处理由 run_sync_ingest() 负责。
-
-        English keywords:
-        background task, ingestion worker, embedding processing, reuse sync service
+        This function is called by FastAPI BackgroundTasks after
+        the API response is sent. It delegates embedding to the
+        existing IngestService pipeline instead of reimplementing it.
 
         Input:
         job_id: ingestion job id

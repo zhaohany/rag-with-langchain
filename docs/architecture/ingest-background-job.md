@@ -1,10 +1,10 @@
 # Ingest Background Job
 
-## 概述
+## Overview
 
-`POST /api/v1/ingest` 改为异步 background job 模式。API 不再同步执行 embedding，而是通过 FastAPI `BackgroundTasks` 将 ingestion pipeline 放入后台执行。
+`POST /api/v1/ingest` now uses an async background job pattern. Instead of running embedding synchronously, the API schedules the ingestion pipeline via FastAPI `BackgroundTasks` and returns immediately.
 
-## 流程
+## Sequence
 
 ```
 Client                     FastAPI                         SQLite
@@ -26,28 +26,22 @@ Client                     FastAPI                         SQLite
   |                          |------------------------------>|
 ```
 
-## 关键设计
+## Key Design Decisions
 
-- 使用 FastAPI 内置 `BackgroundTasks`（不是 Celery / Redis 队列）。
-- 一次 `/ingest` 请求 = 一个 job，全量重建本地索引。
-- 若已有 `queued` 或 `running` 的 job，返回 `409 Conflict`。
-- Job 状态存储在 SQLite `ingest_jobs` 表中。
+- Uses FastAPI built-in `BackgroundTasks` (not Celery / Redis queue).
+- One `/ingest` request = one job that rebuilds the full local index.
+- Returns `409 Conflict` if a job is already `queued` or `running`.
+- Job status is persisted in the SQLite `ingest_jobs` table.
 
-## 文件改动
+## Files Changed
 
-| 文件 | 改动 |
+| File | Change |
 |---|---|
-| `app/api/routes/ingest.py` | 改为使用 `BackgroundTasks` + `IngestQueueService` |
-| `app/services/ingest_queue_service.py` | 新增：队列编排层 |
-| `app/services/database_store.py` | 新增 `ingest_jobs` 表和 CRUD 方法 |
-| `app/models/schemas.py` | `IngestResponse` 增加 `job_id` 字段 |
+| `app/api/routes/ingest.py` | Switch to `BackgroundTasks` + `IngestQueueService` |
+| `app/services/ingest_queue_service.py` | New: queue orchestration layer |
+| `app/services/database_store.py` | Add `ingest_jobs` table and CRUD methods |
+| `app/models/schemas.py` | `IngestResponse` gains `job_id` field |
 
 ## Student Homework
 
-### Task 1: `database_store.py` — `create_ingest_job`
-
-补全 SQL 列名，让 INSERT 语句正确写入 `ingest_jobs` 表。
-
-### Task 2: `ingest_queue_service.py` — `process_ingest_job`
-
-替换 `raise NotImplementedError(...)` 为实际的 `self.ingest_service.run_sync_ingest()` 调用，并构建 success message。
+See `docs/homework-ingest-background-job.md` for detailed assignment instructions.

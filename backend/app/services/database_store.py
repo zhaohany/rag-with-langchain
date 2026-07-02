@@ -216,12 +216,9 @@ class DatabaseStore:
     def create_ingest_job(self, job_id: str, message: str) -> None:
         """Create one queued ingestion job record.
 
-        中文说明：
-        在 /ingest API 接收到请求后，先写入一条 job record。
-        这条记录表示任务已经进入 queued 状态，后台任务稍后会继续处理。
-
-        English keywords:
-        SQL INSERT, job record, queued status, timestamp
+        After receiving a POST /ingest request, write a job record
+        marking the task as "queued". The background task will pick
+        it up later.
 
         Input:
         job_id: ingestion job id, e.g. "ingest_20260628_123456_000000"
